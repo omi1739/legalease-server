@@ -95,6 +95,20 @@ async function run() {
       }
     });
 
+    // GET /lawyers/:name - Fetch a single lawyer by name
+    app.get('/lawyers/:name', async (req, res) => {
+      try {
+        const lawyer = await lawyersCollection.findOne({ name: req.params.name });
+        if (!lawyer) {
+          return res.status(404).json({ error: "Lawyer not found" });
+        }
+        res.json(lawyer);
+      } catch (err) {
+        console.error("Error fetching lawyer profile:", err);
+        res.status(500).json({ error: "Failed to fetch lawyer profile" });
+      }
+    });
+
   } catch (error) {
     console.error("Database connection error:", error);
   }
