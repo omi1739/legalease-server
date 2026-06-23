@@ -109,6 +109,24 @@ async function run() {
       }
     });
 
+    // PATCH /users/:email - Update user profile (name and image)
+    app.patch('/users/:email', async (req, res) => {
+      try {
+        const { name, image } = req.body;
+        const result = await db.collection("user").updateOne(
+          { email: req.params.email },
+          { $set: { name, image } }
+        );
+        if (result.matchedCount === 0) {
+          return res.status(404).json({ error: "User not found" });
+        }
+        res.json({ message: "Profile updated successfully" });
+      } catch (err) {
+        console.error("Error updating user profile:", err);
+        res.status(500).json({ error: "Failed to update profile" });
+      }
+    });
+
   } catch (error) {
     console.error("Database connection error:", error);
   }
