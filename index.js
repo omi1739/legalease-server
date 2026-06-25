@@ -24,23 +24,32 @@ const client = new MongoClient(uri, {
   }
 });
 
-async function run() {
-  try {
-    // Connect the client to the server
+let db, lawyersCollection, hiresCollection, commentsCollection, usersCollection;
+
+async function connectDB() {
+  if (!db) {
     await client.connect();
-    
-    const db = client.db("LEGALEASE");
-    const lawyersCollection = db.collection("lawyers");
-    const hiresCollection = db.collection("hires");
-    const commentsCollection = db.collection("comments");
-    const usersCollection = db.collection("user");
+    db = client.db("LEGALEASE");
+    lawyersCollection = db.collection("lawyers");
+    hiresCollection = db.collection("hires");
+    commentsCollection = db.collection("comments");
+    usersCollection = db.collection("user");
+  }
+}
 
-    // Ping confirmation
-    await db.command({ ping: 1 });
-    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
+// Middleware to ensure DB connection is ready before processing requests
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error("Database connection error in middleware:", err);
+    res.status(500).json({ error: "Database connection failed" });
+  }
+});
 
-    // Helper: Verify session token
-    const verifySession = async (req, res, next) => {
+// Helper: Verify session token
+const verifySession = async (req, res, next) => {
       try {
         let token = null;
         // console.log("verifySession - Received headers:", req.headers);
@@ -570,11 +579,6 @@ async function run() {
       }
     });
 
-  } catch (error) {
-    console.error("Database connection error:", error);
-  }
-}
-run().catch(console.dir);
 
 app.get('/', (req, res) => {
   res.send('LegalEase Server is running!');
