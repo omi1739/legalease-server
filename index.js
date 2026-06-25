@@ -61,12 +61,6 @@ async function run() {
           }
         }
 
-        // Better Auth tokens in cookie are stored as 'token.signature'.
-        // We only need the actual 'token' part before the dot to query the database.
-        if (token && token.includes('.')) {
-          token = token.split('.')[0];
-        }
-
         console.log("verifySession - Resolved token:", token);
 
         if (!token) {
