@@ -37,13 +37,13 @@ async function run() {
 
     // Ping confirmation
     await db.command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
     // Helper: Verify session token
     const verifySession = async (req, res, next) => {
       try {
         let token = null;
-        console.log("verifySession - Received headers:", req.headers);
+        // console.log("verifySession - Received headers:", req.headers);
         
         // 1. Try to get token from Authorization header
         const authHeader = req.headers.authorization;
@@ -54,7 +54,7 @@ async function run() {
         // 2. Try to get token from cookies
         if (!token && req.headers.cookie) {
           const cookies = req.headers.cookie.split(';').map(c => c.trim());
-          console.log("verifySession - Parsed cookies:", cookies);
+          // console.log("verifySession - Parsed cookies:", cookies);
           const sessionCookie = cookies.find(c => c.startsWith('better-auth.session_token='));
           if (sessionCookie) {
             token = sessionCookie.substring('better-auth.session_token='.length);
@@ -67,7 +67,7 @@ async function run() {
           token = token.split('.')[0];
         }
 
-        console.log("verifySession - Resolved token:", token);
+        // console.log("verifySession - Resolved token:", token);
 
         if (!token) {
           return res.status(401).json({ error: "Unauthorized: No token provided" });
