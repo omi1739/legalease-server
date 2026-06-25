@@ -142,6 +142,7 @@ const verifySession = async (req, res, next) => {
         const totalCount = await lawyersCollection.countDocuments(query);
         const lawyers = await lawyersCollection
           .find(query)
+          .sort({ lastUpdated: -1, _id: -1 })
           .skip(skip)
           .limit(limitNum)
           .toArray();
@@ -207,7 +208,8 @@ const verifySession = async (req, res, next) => {
               isAvailable: profile.isAvailable === true,
               avatar: profile.avatar || req.user.image,
               hires: profile.hires || 0,
-              rating: profile.rating || 5.0
+              rating: profile.rating || 5.0,
+              lastUpdated: new Date()
             }
           },
           { upsert: true }
